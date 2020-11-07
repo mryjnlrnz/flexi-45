@@ -1,0 +1,24 @@
+.date-time {
+  max-width: 250px;
+  margin-top: 10%;
+  .hour-mins {
+    font-size: 45px;
+    font-weight: bold;
+  }
+  .time-unit {
+    top: 17px;
+    right: 22px;
+    font-size: 14px;
+  }
+  .seconds {
+    top: 33px;
+    right: 24px;
+    font-size: 14px;
+  }
+  .date {
+    bottom: -8px;
+    text-align: center;
+    width: 100%;
+    font-size: 14px;
+  }
+}

@@ -1,0 +1,23 @@
+.cue-divider {
+  margin-top: 60px;
+  hr {
+    border-color: #313131;
+  }
+  .cue-wrapper {
+    margin-top: -46px;
+    color: #ffffff;
+  }
+  .cue-container {
+    padding: 0;
+  }
+  .cue {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 9px solid #ffffff;
+  }
+  .day {
+    font-size: 14px;
+  }
+}
