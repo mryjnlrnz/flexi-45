@@ -1,30 +1,28 @@
 import React, {
-  useState,
   useEffect
 } from 'react';
+import { connect } from 'react-redux';
+import {
+  setCurrentWeek,
+} from './actions';
+
 import Days from './Days';
 
 import '../assets/DaysList.scss';
 
-const DaysList = ({setOverallTotalMinutes, setCurrentWeek}) => {
-  const [daysListState, setDaysListState] = useState({
-    currentWeek: [],
-    overallTotalMinutes: 0,
-    timeOutsInMinutes: 0,
-  });
+const DaysList = ({
+  currentWeek = [],
+  inOutDetails,
+  onSetCurrentWeek,
+}) => {
 
   useEffect(() => {
-    if (!daysListState.currentWeek.length) {
-      setDaysListState({
-        ...daysListState,
-        currentWeek: getCurrentWeek(),
-      });
+    if (!currentWeek.length) {
+      getCurrentWeek();
     }
 
-    setOverallTotalMinutes(daysListState.overallTotalMinutes);
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [daysListState.overallTotalMinutes]);
+  }, []);
 
   const getCurrentWeek = () => {
     const today = new Date();
@@ -36,32 +34,26 @@ const DaysList = ({setOverallTotalMinutes, setCurrentWeek}) => {
       week.push(day);
     }
 
-    setCurrentWeek(week);
+    onSetCurrentWeek(week);
     return week;
   }
 
-  const updateTotalInMinutes = (totalMinutes, from) => {
-    if (from === 'timeout') {
-      setDaysListState({
-        ...daysListState,
-        timeOutsInMinutes: daysListState.timeOutsInMinutes + totalMinutes,
-        overallTotalMinutes: daysListState.timeOutsInMinutes + totalMinutes
-      });
-      return;
-    }
-    setDaysListState({
-      ...daysListState,
-      overallTotalMinutes: daysListState.overallTotalMinutes + totalMinutes
-    });
+  const getDetails = (key) => {
+    return inOutDetails.filter(detail => detail.id === key);
   }
 
   return (
     <div className="container days-list">
       <div className="row days-list-container">
         {
-          daysListState.currentWeek.map(
+          currentWeek.map(
             (day, key) =>
-              <Days key={key} day={day} updateTotalInMinutes={updateTotalInMinutes}></Days>
+              <Days
+                key={key}
+                dkey={key}
+                day={day}
+                inOutDetails={getDetails(key)[0]}
+              ></Days>
           )
         }
       </div>
@@ -69,4 +61,13 @@ const DaysList = ({setOverallTotalMinutes, setCurrentWeek}) => {
   );
 };
 
-export default DaysList;
+const mapStateToProps = state => ({
+  currentWeek: state.flexi.currentWeek,
+  inOutDetails: state.flexi.inOutDetails,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onSetCurrentWeek: data => dispatch(setCurrentWeek(data)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(DaysList);

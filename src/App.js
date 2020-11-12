@@ -1,5 +1,5 @@
 import React, {
-  useState
+  // useState
 } from 'react';
 import DateTime from './components/DateTime';
 import CueDivider from './components/CueDivider';
@@ -9,18 +9,20 @@ import OtherData from './components/OtherData';
 import './App.scss';
 
 function App() {
-  const [overallTotalMinutes, setOverallTotalMinutes] = useState(0);
-  const [currentWeek, setCurrentWeek] = useState([]);
+  // const [overallTotalMinutes, setOverallTotalMinutes] = useState(0);
+  // const [currentWeek, setCurrentWeek] = useState([]);
 
   return (
     <div className="app">
       <DateTime></DateTime>
-      <CueDivider currentWeek={currentWeek}></CueDivider>
+      <CueDivider></CueDivider>
       <DaysList
-        setOverallTotalMinutes={setOverallTotalMinutes}
-        setCurrentWeek={setCurrentWeek}
+        // setOverallTotalMinutes={setOverallTotalMinutes}
+        // setCurrentWeek={setCurrentWeek}
       ></DaysList>
-      <OtherData overallTotalMinutes={overallTotalMinutes}></OtherData>
+      <OtherData
+        // overallTotalMinutes={overallTotalMinutes}
+      ></OtherData>
     </div>
   );
 }

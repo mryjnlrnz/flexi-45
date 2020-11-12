@@ -2,12 +2,13 @@ import React, {
   useState,
   useEffect,
 } from 'react';
+import { connect } from 'react-redux';
 
 import { convert } from '../helpers/timeConverter';
 
 import '../assets/OtherData.scss';
 
-const OtherData = ({overallTotalMinutes}) => {
+const OtherData = ({overallTotalMinutes = 0}) => {
   const [otherDataState, setOtherDataState] = useState({
     requiredTimeInMinutes: 45 * 60,
     displayTotalHoursThisWeek: '45h 0m',
@@ -50,4 +51,8 @@ const OtherData = ({overallTotalMinutes}) => {
   );
 }
 
-export default OtherData;
+const mapStateToProps = state => ({
+  overallTotalMinutes: state.flexi.overallTotalMinutes
+});
+
+export default connect(mapStateToProps)(OtherData);

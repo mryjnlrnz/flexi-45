@@ -1,8 +1,9 @@
 import React from 'react';
+import { connect } from 'react-redux';
 
 import '../assets/CueDivider.scss';
 
-const CueDivider = ({currentWeek}) => {
+const CueDivider = ({currentWeek = []}) => {
   return (
     <div className="cue-divider position-relative">
       <hr />
@@ -25,4 +26,8 @@ const CueDivider = ({currentWeek}) => {
   );
 }
 
-export default CueDivider;
+const mapStateToProps = state => ({
+  currentWeek: state.flexi.currentWeek
+});
+
+export default connect(mapStateToProps)(CueDivider);

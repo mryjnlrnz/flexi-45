@@ -1,44 +1,46 @@
 import React, {
   useState,
-  useEffect
+  useEffect,
 } from 'react';
+import { connect } from 'react-redux';
+import {
+  setOverallTotalMinutes,
+  setTimeoutsInMinutes,
+  setLoginTime,
+} from './actions';
 
 import '../assets/Days.scss';
 
-const Days = ({day, updateTotalInMinutes}) => {
-  const [daysState, setDaysState] = useState({
-    timeIn: null,
-    timeOut: null,
-    displayTimeIn: null,
-    displayTimeOut: null,
-    intervalId: null,
-    isActive: false,
-    isHover: false,
-    isEOD: false,
-  });
+const Days = ({
+  day,
+  inOutDetails = {},
+  dkey,
+  overallTotalMinutes = 0,
+  timeoutsInMinutes = 0,
+  onSetTimeoutsInMinutes,
+  onSetOverallTotalMinutes,
+  onSetLoginTime,
+}) => {
+
+  const [isHover, setIshover] = useState(false);
 
   useEffect(() => {
-    if (daysState.timeIn && !daysState.isEOD) {
-      const interval = setInterval(updateTotalRendered, 1000);
-      setDaysState({
-        ...daysState,
-        intervalId: interval,
-      });
-      return () => clearInterval(interval);
-    }
 
-    if (daysState.isEOD) {
-      const newTimeOut = new Date(daysState.timeIn);
-      newTimeOut.setHours(23);
-      newTimeOut.setMinutes(59);
-      timeOut(newTimeOut);
+    if (inOutDetails.timeIn && !inOutDetails.timeOut) {
+      const intervalId = setInterval(updateTotalRendered, 1000);
+      onSetLoginTime({
+        id: dkey,
+        intervalId: intervalId,
+        isReload: true,
+      });
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [daysState.timeIn, daysState.isEOD]);
+  }, []);
 
   const log = () => {
     const now = new Date();
+    // const now = new Date(2020, 10, 11, 0, 0, 0, 0);
     now.setSeconds(0);
 
     const componentDate = new Date(day);
@@ -47,49 +49,53 @@ const Days = ({day, updateTotalInMinutes}) => {
       return;
     }
 
-    if (!daysState.timeIn) {
-      timeIn(now);
+    if (!inOutDetails.timeIn) {
+      timein(now);
       return;
     }
 
-    if (!daysState.timeOut) {
-      timeOut(now);
+    if (!inOutDetails.timeOut) {
+      timeout(now);
       return
     }
   }
 
-  const timeIn = (now) => {
-    setDaysState({
-      ...daysState,
+  const timein = (now) => {
+    const intervalId = setInterval(updateTotalRendered, 1000);
+    onSetLoginTime({
+      id: dkey,
       isActive: true,
       timeIn: now,
-      displayTimeIn: now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+      displayTimeIn: now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+      intervalId: intervalId
     });
   };
 
-  const timeOut = (dateTime) => {
-    clearInterval(daysState.intervalId);
-    setDaysState({
-      ...daysState,
+  const timeout = (dateTime) => {
+    // dateTime = new Date(2020, 10, 11, 1, 0, 0, 0);
+    clearInterval(inOutDetails.intervalId);
+    onSetLoginTime({
+      id: dkey,
       isActive: false,
       timeOut: dateTime,
-      isHover: false,
       displayTimeOut: dateTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
     });
     updateTotalRendered('timeout', dateTime);
   };
 
   const updateTotalRendered = (from, dateTime) => {
+    console.log('updateeeee', from);
 
-    const timeIn = daysState.timeIn;
+    const timeIn = new Date(inOutDetails.timeIn);
+    // let timeOut = new Date(2020, 10, 11, 1, 0, 0, 0);
     let timeOut = new Date();
 
     if (from !== 'timeout') {
-      if (!daysState.isEOD && timeOut.getDay() !== timeIn.getDay()) {
-        setDaysState({
-          ...daysState,
-          isEOD: true
-        });
+      if (timeOut.getDay() !== timeIn.getDay()) {
+        const newTimeOut = timeIn;
+        newTimeOut.setHours(23);
+        newTimeOut.setMinutes(59);
+        timeout(newTimeOut);
         return;
       }
     }
@@ -105,14 +111,35 @@ const Days = ({day, updateTotalInMinutes}) => {
     updateTotalInMinutes(totalMinutes, from);
   };
 
-  const displayElem = () => {
-    let element;
-    if (daysState.timeIn) {
-      element = <p>IN { daysState.displayTimeIn }</p>
+  const updateTotalInMinutes = (totalMinutes, from) => {
+
+    overallTotalMinutes = inOutDetails.isReload ? 0 : timeoutsInMinutes;
+    const total = timeoutsInMinutes + totalMinutes;
+
+    if (from === 'timeout') {
+      onSetTimeoutsInMinutes(total);
+    }
+    
+    if (from === 'timeout' || inOutDetails.isReload) {
+      onSetLoginTime({
+        id: dkey,
+        isReload: false,
+      });
+      onSetOverallTotalMinutes(total);
+      return;
     }
 
-    if (daysState.timeOut) {
-      element = <p>OUT { daysState.displayTimeOut }</p>
+    onSetOverallTotalMinutes(overallTotalMinutes + totalMinutes);
+  }
+
+  const displayElem = () => {
+    let element;
+    if (inOutDetails.timeIn) {
+      element = <p>IN { inOutDetails.displayTimeIn }</p>
+    }
+
+    if (inOutDetails.timeOut) {
+      element = <p>OUT { inOutDetails.displayTimeOut }</p>
     }
 
     return element;
@@ -125,16 +152,15 @@ const Days = ({day, updateTotalInMinutes}) => {
 
         <div className="position-relative day-container">
           <div className={
-              `glow-on-hover
-              ${daysState.isHover || daysState.isActive ? 'active' : ''}`
-            }
+            `glow-on-hover ${isHover || inOutDetails.isActive ? 'active' : ''}`
+          }
           ></div>
           <div className={
-            `day d-flex align-items-center text-center position-absolute
-              ${daysState.timeIn && !daysState.timeOut ? 'time-in' : ''}`
+              `day d-flex align-items-center text-center position-absolute
+              ${inOutDetails.isActive ? 'time-in' : ''}`
             }
-            onMouseEnter={() => setDaysState({...daysState, isHover: true})}
-            onMouseLeave={() => setDaysState({...daysState, isHover: false})}
+            onMouseEnter={() => setIshover(true)}
+            onMouseLeave={() => setIshover(false)}
           >
             {displayElem()}
           </div>
@@ -145,4 +171,15 @@ const Days = ({day, updateTotalInMinutes}) => {
   );
 };
 
-export default Days;
+const mapStateToProps = state => ({
+  overallTotalMinutes: state.flexi.overallTotalMinutes,
+  timeoutsInMinutes: state.flexi.timeoutsInMinutes,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onSetOverallTotalMinutes: data => dispatch(setOverallTotalMinutes(data)),
+  onSetTimeoutsInMinutes: data => dispatch(setTimeoutsInMinutes(data)),
+  onSetLoginTime: data => dispatch(setLoginTime(data)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Days);
