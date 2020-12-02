@@ -9,3 +9,7 @@ export const convert = (totalMinutes) => {
       toMins: minutes
     }
 }
+
+export const twoDigitsFormat = (time) => {
+  return ('0' + time).slice(-2);
+}

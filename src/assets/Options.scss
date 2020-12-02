@@ -1,0 +1,24 @@
+.options {
+  background-color: #181e28;
+  color: #fff;
+  text-align: center;
+  max-width: 500px;
+  padding: 15px;
+
+  .in-out-container {
+    padding: 10px 0;
+  }
+
+  .timein,
+  .timeout {
+    overflow: auto;
+    padding: 10px 0;
+    label {
+      float: left;
+    }
+    input {
+      float: right;
+      width: 50%;
+    }
+  }
+}

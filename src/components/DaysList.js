@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import {
   setCurrentWeek,
 } from './actions';
+import { isEqual } from '../utils/compareArray';
 
 import Days from './Days';
 
@@ -17,9 +18,7 @@ const DaysList = ({
 }) => {
 
   useEffect(() => {
-    if (!currentWeek.length) {
-      getCurrentWeek();
-    }
+    getCurrentWeek();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -34,7 +33,10 @@ const DaysList = ({
       week.push(day);
     }
 
-    onSetCurrentWeek(week);
+    if (!isEqual(currentWeek, week)) {
+      onSetCurrentWeek(week);
+    }
+
     return week;
   }
 

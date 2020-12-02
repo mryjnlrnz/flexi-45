@@ -3,8 +3,7 @@ import React, {
   useEffect,
 } from 'react';
 import { connect } from 'react-redux';
-
-import { convert } from '../helpers/timeConverter';
+import { convert } from '../utils/timeConverter';
 
 import '../assets/OtherData.scss';
 

@@ -5,7 +5,8 @@ import React, {
 import {
   getDay,
   getMonth
-} from '../helpers/assocDate';
+} from '../utils/assocDate';
+import { twoDigitsFormat } from '../utils/timeConverter';
 
 import '../assets/DateTime.scss';
 
@@ -24,12 +25,10 @@ const DateTime = () => {
   }, []);
 
   const currentDateTime = () => {
-    const addZero = n => n < 10 ? '0' +  n : n;
-
     const now = new Date(),
-      h = addZero(now.getHours() % 12 || 12),
-      m = addZero(now.getMinutes()),
-      s = addZero(now.getSeconds()),
+      h = twoDigitsFormat(now.getHours() % 12 || 12),
+      m = twoDigitsFormat(now.getMinutes()),
+      s = twoDigitsFormat(now.getSeconds()),
       amPm = now.getHours() >= 12 ? 'PM' : 'AM';
     
     setDateTimeInfo({

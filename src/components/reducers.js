@@ -2,7 +2,9 @@ import {
   SET_CURRENT_WEEK,
   SET_OVERALL_TOTAL_MINUTES,
   SET_TIMEOUTS_IN_MINUTES,
-  SET_LOGIN_TIME,
+  SET_LOG_TIME,
+  RESET_DATA,
+  SET_OPTIONS,
 } from './actions';
 
 const initialState = {
@@ -31,6 +33,7 @@ export const flexi = (state = initialState, action) => {
   switch (type) {
     case SET_CURRENT_WEEK: {
       const { data } = payload;
+      state = initialState;
       return {
         ...state,
         currentWeek: data,
@@ -53,7 +56,7 @@ export const flexi = (state = initialState, action) => {
       }
     }
 
-    case SET_LOGIN_TIME: {
+    case SET_LOG_TIME: {
       const { data } = payload;
         
       state.inOutDetails.map( item => {
@@ -66,6 +69,25 @@ export const flexi = (state = initialState, action) => {
       });
 
       return state;
+    }
+
+    case RESET_DATA: {
+      const { data } = payload;
+      const newDetails = state.inOutDetails.filter(todo => todo.id !== data.id);
+      newDetails.push({id: data.id})
+
+      return {
+        ...state,
+        inOutDetails: newDetails
+      }
+    }
+
+    case SET_OPTIONS: {
+      const { data } = payload;
+      return {
+        ...state,
+        options: data
+      };
     }
   
     default:

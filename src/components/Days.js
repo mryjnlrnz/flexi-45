@@ -6,8 +6,11 @@ import { connect } from 'react-redux';
 import {
   setOverallTotalMinutes,
   setTimeoutsInMinutes,
-  setLoginTime,
+  setLogTime,
+  setOptions,
 } from './actions';
+import { convert } from '../utils/timeConverter';
+import { calculateInOut } from '../utils/timeComputation';
 
 import '../assets/Days.scss';
 
@@ -19,33 +22,36 @@ const Days = ({
   timeoutsInMinutes = 0,
   onSetTimeoutsInMinutes,
   onSetOverallTotalMinutes,
-  onSetLoginTime,
+  onSetLogTime,
+  onSetOptions,
 }) => {
 
   const [isHover, setIshover] = useState(false);
+  const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
 
     if (inOutDetails.timeIn && !inOutDetails.timeOut) {
       const intervalId = setInterval(updateTotalRendered, 1000);
-      onSetLoginTime({
+      onSetLogTime({
         id: dkey,
         intervalId: intervalId,
         isReload: true,
       });
     }
 
+    onSetOptions({ isDisplayed: false });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const log = () => {
     const now = new Date();
-    // const now = new Date(2020, 10, 11, 0, 0, 0, 0);
     now.setSeconds(0);
 
     const componentDate = new Date(day);
     if (now.getDay() !== componentDate.getDay()) {
-      alert('The date you clicked is not today');
+      alert('Not today');
       return;
     }
 
@@ -58,11 +64,23 @@ const Days = ({
       timeout(now);
       return
     }
+
+    showOptions();
+  }
+
+  const showOptions = () => {
+    onSetOptions({
+      id: dkey,
+      isDisplayed: true,
+      timeIn: inOutDetails.timeIn,
+      timeOut: inOutDetails.timeOut
+    });
   }
 
   const timein = (now) => {
     const intervalId = setInterval(updateTotalRendered, 1000);
-    onSetLoginTime({
+    setIsActive(true);
+    onSetLogTime({
       id: dkey,
       isActive: true,
       timeIn: now,
@@ -72,22 +90,25 @@ const Days = ({
   };
 
   const timeout = (dateTime) => {
-    // dateTime = new Date(2020, 10, 11, 1, 0, 0, 0);
+    const timeIn = new Date(inOutDetails.timeIn);
+    const timeOut = new Date(dateTime);
+    const totalMinutes = calculateInOut(timeIn, timeOut);
+    const converted = convert(totalMinutes);
+
     clearInterval(inOutDetails.intervalId);
-    onSetLoginTime({
+    setIsActive(false);
+    onSetLogTime({
       id: dkey,
       isActive: false,
       timeOut: dateTime,
       displayTimeOut: dateTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+      total: `${converted.toHours}h ${converted.toMins}m`,
     });
     updateTotalRendered('timeout', dateTime);
   };
 
   const updateTotalRendered = (from, dateTime) => {
-    console.log('updateeeee', from);
-
     const timeIn = new Date(inOutDetails.timeIn);
-    // let timeOut = new Date(2020, 10, 11, 1, 0, 0, 0);
     let timeOut = new Date();
 
     if (from !== 'timeout') {
@@ -106,22 +127,20 @@ const Days = ({
 
     timeOut.setSeconds(0);
 
-    const milliseconds = timeOut.getTime() - timeIn.getTime();
-    const totalMinutes = Math.round(milliseconds / 60000);
+    const totalMinutes = calculateInOut(timeIn, timeOut);
     updateTotalInMinutes(totalMinutes, from);
   };
 
   const updateTotalInMinutes = (totalMinutes, from) => {
-
     overallTotalMinutes = inOutDetails.isReload ? 0 : timeoutsInMinutes;
-    const total = timeoutsInMinutes + totalMinutes;
+    const total = (timeoutsInMinutes + totalMinutes);
 
     if (from === 'timeout') {
       onSetTimeoutsInMinutes(total);
     }
     
     if (from === 'timeout' || inOutDetails.isReload) {
-      onSetLoginTime({
+      onSetLogTime({
         id: dkey,
         isReload: false,
       });
@@ -134,12 +153,23 @@ const Days = ({
 
   const displayElem = () => {
     let element;
-    if (inOutDetails.timeIn) {
-      element = <p>IN { inOutDetails.displayTimeIn }</p>
+    const inElem = <p>IN { inOutDetails.displayTimeIn }</p>
+
+    if (inOutDetails.timeIn && !inOutDetails.timeOut) {
+      element = inElem;
     }
 
-    if (inOutDetails.timeOut) {
-      element = <p>OUT { inOutDetails.displayTimeOut }</p>
+    if (inOutDetails.timeOut && isHover) {
+      element = (
+        <>
+          { inElem }
+          <p>OUT { inOutDetails.displayTimeOut }</p>
+        </>
+      )
+    }
+
+    if (inOutDetails.timeOut && !isHover) {
+      element = <p>Total { inOutDetails.total }</p>
     }
 
     return element;
@@ -152,12 +182,14 @@ const Days = ({
 
         <div className="position-relative day-container">
           <div className={
-            `glow-on-hover ${isHover || inOutDetails.isActive ? 'active' : ''}`
+            `glow-on-hover ${isHover || isActive || inOutDetails.isActive ? 'active' : ''}`
           }
           ></div>
           <div className={
-              `day d-flex align-items-center text-center position-absolute
-              ${inOutDetails.isActive ? 'time-in' : ''}`
+              `day text-center position-absolute
+              ${inOutDetails.isActive ? 'time-in' : ''}
+              ${isHover && inOutDetails.timeOut ? '' : 'd-flex align-items-center'}
+              `
             }
             onMouseEnter={() => setIshover(true)}
             onMouseLeave={() => setIshover(false)}
@@ -179,7 +211,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   onSetOverallTotalMinutes: data => dispatch(setOverallTotalMinutes(data)),
   onSetTimeoutsInMinutes: data => dispatch(setTimeoutsInMinutes(data)),
-  onSetLoginTime: data => dispatch(setLoginTime(data)),
+  onSetLogTime: data => dispatch(setLogTime(data)),
+  onSetOptions: data => dispatch(setOptions(data)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Days);

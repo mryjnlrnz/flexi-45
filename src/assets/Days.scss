@@ -2,6 +2,7 @@
   text-align: center;
   color: #65686c;
   padding: 0;
+  cursor: pointer;
   .day {
     height: 120px;
     width: 45px;
@@ -13,6 +14,11 @@
     top: 0;
     left: 0;
     right: 0;
+    p {
+      border: 1px solid transparent;
+      width: 80%;
+      margin: 0 auto;
+    }
   }
   .time-in {
     color: #ffffff;
@@ -20,7 +26,6 @@
   }
   .glow-on-hover {
     opacity: 0;
-    cursor: pointer;
     position: relative;
     z-index: 0;
     height: 120px;
@@ -29,9 +34,11 @@
     margin: 0 auto;
     color: #595d62;
     font-size: 12px;
-  
-    &.active {
-      opacity: 1;
+
+    @media only screen and (min-width: 801px) {
+      &.active {
+        opacity: 1;
+      }
     }
   }
   .glow-on-hover:before {

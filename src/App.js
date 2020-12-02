@@ -1,30 +1,34 @@
-import React, {
-  // useState
-} from 'react';
+import React from 'react';
+import { connect } from 'react-redux';
 import DateTime from './components/DateTime';
 import CueDivider from './components/CueDivider';
 import DaysList from './components/DaysList';
 import OtherData from './components/OtherData';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import Options from './components/Options';
 
 import './App.scss';
 
-function App() {
-  // const [overallTotalMinutes, setOverallTotalMinutes] = useState(0);
-  // const [currentWeek, setCurrentWeek] = useState([]);
-
+function App({options = {}}) {
   return (
     <div className="app">
-      <DateTime></DateTime>
-      <CueDivider></CueDivider>
-      <DaysList
-        // setOverallTotalMinutes={setOverallTotalMinutes}
-        // setCurrentWeek={setCurrentWeek}
-      ></DaysList>
-      <OtherData
-        // overallTotalMinutes={overallTotalMinutes}
-      ></OtherData>
+      {!options.isDisplayed ?
+        <>
+          <Header></Header>
+          <DateTime></DateTime>
+          <CueDivider></CueDivider>
+          <DaysList></DaysList>
+          <OtherData></OtherData>
+          <Footer></Footer>
+        </> :
+        <Options></Options>}
     </div>
   );
 }
 
-export default App;
+const mapStateToProps = state => ({
+  options: state.flexi.options
+});
+
+export default connect(mapStateToProps)(App);
