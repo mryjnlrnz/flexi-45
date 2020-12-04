@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/flexi-45/static/css/main.474702da.chunk.css",
+    "main.js": "/flexi-45/static/js/main.15fab09c.chunk.js",
+    "main.js.map": "/flexi-45/static/js/main.15fab09c.chunk.js.map",
+    "runtime-main.js": "/flexi-45/static/js/runtime-main.8368c3e1.js",
+    "runtime-main.js.map": "/flexi-45/static/js/runtime-main.8368c3e1.js.map",
+    "static/css/2.6414bb7b.chunk.css": "/flexi-45/static/css/2.6414bb7b.chunk.css",
+    "static/js/2.af840ca0.chunk.js": "/flexi-45/static/js/2.af840ca0.chunk.js",
+    "static/js/2.af840ca0.chunk.js.map": "/flexi-45/static/js/2.af840ca0.chunk.js.map",
+    "index.html": "/flexi-45/index.html",
+    "precache-manifest.5bd15e0b268c9a44f4cea974313e4585.js": "/flexi-45/precache-manifest.5bd15e0b268c9a44f4cea974313e4585.js",
+    "service-worker.js": "/flexi-45/service-worker.js",
+    "static/css/2.6414bb7b.chunk.css.map": "/flexi-45/static/css/2.6414bb7b.chunk.css.map",
+    "static/css/main.474702da.chunk.css.map": "/flexi-45/static/css/main.474702da.chunk.css.map",
+    "static/js/2.af840ca0.chunk.js.LICENSE.txt": "/flexi-45/static/js/2.af840ca0.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.8368c3e1.js",
+    "static/css/2.6414bb7b.chunk.css",
+    "static/js/2.af840ca0.chunk.js",
+    "static/css/main.474702da.chunk.css",
+    "static/js/main.15fab09c.chunk.js"
+  ]
+}
